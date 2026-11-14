@@ -29,6 +29,7 @@ struct SwiftfinApp: App {
             .background {
                 DatamoriBackground()
             }
+            .datamoriObservesPlaybackEnd()
         }
     }
 }

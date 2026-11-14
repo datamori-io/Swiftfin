@@ -131,7 +131,14 @@ struct SettingsView: View {
             Picker(L10n.appearance, selection: $appearance)
             #endif
 
+            #if os(tvOS)
+            // Datamori: accent is fixed to the brand red; Home rows are configurable.
+            ChevronButton("Home Rows") {
+                router.route(to: .datamoriHomeSettings)
+            }
+            #else
             ColorPicker(L10n.accentColor, selection: $accentColor, supportsOpacity: false)
+            #endif
 
             ChevronButton(L10n.advanced) {
                 router.route(to: .customizeSettingsView)

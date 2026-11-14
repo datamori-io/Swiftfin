@@ -64,6 +64,7 @@ struct PosterButton<Item: Poster>: View {
         .subtleShadow()
         .hoverEffect(.highlight)
         #if os(tvOS)
+        .datamoriPosterBadge()
         .datamoriFocusMark()
         #endif
     }
