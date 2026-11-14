@@ -26,6 +26,9 @@ struct SwiftfinApp: App {
                     }
                 }
             }
+            .background {
+                DatamoriBackground()
+            }
         }
     }
 }

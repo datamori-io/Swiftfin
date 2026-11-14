@@ -63,6 +63,9 @@ struct PosterButton<Item: Poster>: View {
         .matchedTransitionSource(id: "item", in: namespace)
         .subtleShadow()
         .hoverEffect(.highlight)
+        #if os(tvOS)
+        .datamoriFocusMark()
+        #endif
     }
 
     @ContentBuilder
@@ -98,7 +101,11 @@ struct PosterButton<Item: Poster>: View {
         .environment(\.posterDisplayType, displayType)
         .foregroundStyle(.primary, .secondary)
         .buttonStyle(.borderless)
+        #if os(tvOS)
+        .buttonBorderShape(.roundedRectangle(radius: Datamori.cornerRadius))
+        #else
         .buttonBorderShape(.roundedRectangle)
+        #endif
         #if os(tvOS)
         .focusedValue(\.focusedPoster, AnyPoster(item))
         .trackingSize($posterSize)
