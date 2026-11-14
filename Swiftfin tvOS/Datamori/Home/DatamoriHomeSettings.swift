@@ -49,10 +49,12 @@ extension Defaults.Keys {
     )
 
     /// MDBList list JSON URLs used to rank Top 10 Trending.
-    /// Each URL must end in `/json/` (the trailing slash matters).
+    /// Order: TV, movies, anime. All three answer with a JSON array at `/json/`.
     static let datamoriTrendingListURLs = Key<[String]>(
         "datamori.home.trendingListURLs",
         default: [
+            "https://mdblist.com/lists/datamori-io/trending/json/",
+            "https://mdblist.com/lists/datamori/trending-movies/json/",
             "https://mdblist.com/lists/datamori/trending-anime/json/",
         ]
     )

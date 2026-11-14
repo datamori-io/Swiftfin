@@ -48,7 +48,7 @@ struct DatamoriHomeSettingsView: View {
                     urls.append("")
                 }
                 urls[index] = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
-                trendingURLs = urls.filter { !$0.isEmpty }
+                trendingURLs = urls // keep empty slots so TV/movies/anime stay in place
             }
         )
     }
@@ -88,7 +88,9 @@ struct DatamoriHomeSettingsView: View {
             } header: {
                 Text("Top 10 Trending — MDBList")
             } footer: {
-                Text("MDBList list JSON URLs, ending in /json/. If a list can't be loaded, the row falls back to date added.")
+                Text(
+                    "MDBList list JSON URLs, ending in /json/ (TV, movies, anime). If a list can't be loaded, the row falls back to date added."
+                )
             }
 
             Section {
