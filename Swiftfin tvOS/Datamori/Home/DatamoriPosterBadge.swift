@@ -59,6 +59,8 @@ private struct DatamoriPosterBadgeModifier: ViewModifier {
                 if let text {
                     Text(text)
                         .datamoriLabel(.caption2, weight: .semibold)
+                        .lineLimit(1)
+                        .fixedSize()
                         .foregroundStyle(Datamori.primaryText)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)

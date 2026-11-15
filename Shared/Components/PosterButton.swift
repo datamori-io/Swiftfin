@@ -61,11 +61,15 @@ struct PosterButton<Item: Poster>: View {
         .overlay { overlay.posterStyle(displayType) }
         .contentShape(.contextMenuPreview, Rectangle())
         .matchedTransitionSource(id: "item", in: namespace)
+        #if os(tvOS)
+        .datamoriPosterBadge()
+        #endif
         .subtleShadow()
         .hoverEffect(.highlight)
         #if os(tvOS)
-        .datamoriPosterBadge()
-        .datamoriFocusMark()
+        // After the hover effect (inside it, the lift highlight hides it);
+        // scaled to match the lifted poster.
+        .datamoriFocusMark(liftScale: Datamori.focusLiftScale)
         #endif
     }
 

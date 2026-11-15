@@ -28,7 +28,7 @@ struct DatamoriHomeProvider: ContentGroupProvider {
     @Injected(\.currentUserSession)
     var userSession: UserSession?
 
-    let displayTitle: String = L10n.home
+    let displayTitle: String = "Home Page"
     let id: String = "datamori-home"
 
     var refreshRequests: AnyPublisher<ContentGroupRefreshRequest, Never> {
@@ -103,7 +103,7 @@ struct DatamoriHomeProvider: ContentGroupProvider {
                             library: DatamoriLeavingSoonLibrary(parentIDs: leavingSoonIDs),
                             environment: .init(isHeaderButtonEnabled: false)
                         ),
-                        badge: .label("Leaving soon")
+                        badge: .label("Leaving")
                     )
                 }
 

@@ -46,6 +46,9 @@ enum Datamori {
     /// Focus mark stroke width.
     static let focusStroke: CGFloat = 3
 
+    /// How much tvOS's focus lift enlarges a poster (measured: ~12%).
+    static let focusLiftScale: CGFloat = 1.12
+
     // MARK: - Assets
 
     /// Datamori heart mark (light-on-dark), in the tvOS asset catalog.

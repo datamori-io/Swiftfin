@@ -46,6 +46,9 @@ struct SettingsView: View {
             serverSection
             customizeSection
             diagnosticsSection
+            #if os(tvOS)
+            DatamoriSignOutSection()
+            #endif
         }
         #if os(iOS)
         .navigationTitle(L10n.settings)
@@ -91,6 +94,8 @@ struct SettingsView: View {
             }
         }
 
+        #if !os(tvOS)
+        // Datamori: on tvOS, Sign Out lives at the bottom of Settings behind a confirm.
         Section {
             Button {
                 Task { @MainActor in
@@ -120,6 +125,7 @@ struct SettingsView: View {
             .controlSize(.large)
             #endif
         }
+        #endif
     }
 
     // MARK: - Customization Section

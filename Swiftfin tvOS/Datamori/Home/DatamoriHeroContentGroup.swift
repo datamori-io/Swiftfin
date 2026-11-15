@@ -47,6 +47,9 @@ struct DatamoriHeroContentGroup: ContentGroup {
         @Router
         private var router
 
+        @Namespace
+        private var heroScope
+
         private var parentHeight: CGFloat {
             let height = frameForParentView[.scrollView, default: .zero].frame.height
             return height > 0 ? height : 1080
@@ -69,8 +72,11 @@ struct DatamoriHeroContentGroup: ContentGroup {
                         viewModel: viewModel.resumeGroup.viewModel,
                         group: viewModel.resumeGroup
                     )
+                    // Continue Watching takes initial focus when present.
+                    .prefersDefaultFocus(true, in: heroScope)
                 }
             }
+            .focusScope(heroScope)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(alignment: .top) {
                 if let newest {
@@ -120,17 +126,26 @@ struct DatamoriHeroContentGroup: ContentGroup {
                         .frame(maxWidth: 1000, alignment: .leading)
                 }
 
-                Button {
-                    router.route(to: .item(item: item))
-                } label: {
-                    Text("View")
-                        .datamoriLabel(.callout, weight: .medium)
-                        .padding(.horizontal, 24)
+                // Only when there's nothing to resume: then VIEW is the first
+                // focus below the tab bar. With resume items, Continue
+                // Watching is the first focus instead (the newest addition is
+                // still reachable in Recently Added).
+                if !viewModel.hasResumeItems {
+                    Button {
+                        router.route(to: .item(item: item))
+                    } label: {
+                        Text("View")
+                            .datamoriLabel(.callout, weight: .medium)
+                    }
+                    .buttonStyle(.datamori)
+                    .prefersDefaultFocus(true, in: heroScope)
                 }
-                .buttonBorderShape(.roundedRectangle(radius: Datamori.cornerRadius))
             }
             .edgePadding(.horizontal)
             .frame(maxWidth: .infinity, alignment: .leading)
+            // Full-width section: moving down from the tab bar lands here
+            // (on VIEW) rather than skipping to the first row.
+            .focusSection()
         }
 
         // MARK: Backdrop
@@ -215,7 +230,8 @@ final class DatamoriHeroViewModel: ViewModel, WithRefresh {
             displayTitle: "Continue Watching",
             posterDisplayType: .landscape,
             posterSize: .medium,
-            _viewContext: .isInResume
+            // No header button, so focus goes straight to the first card.
+            environment: .init(isHeaderButtonEnabled: false, viewContext: .isInResume)
         )
         self.newestViewModel = PagingLibraryViewModel(library: RecentlyAddedLibrary(), pageSize: 1)
         super.init()

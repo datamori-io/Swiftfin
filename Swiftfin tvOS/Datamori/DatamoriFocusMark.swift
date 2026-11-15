@@ -14,8 +14,8 @@ extension View {
     /// focusable control (button) has focus. The system lift/parallax
     /// still applies; this adds the brand "mark".
     @ContentBuilder
-    func datamoriFocusMark(cornerRadius: CGFloat = Datamori.cornerRadius) -> some View {
-        modifier(DatamoriFocusMarkModifier(cornerRadius: cornerRadius))
+    func datamoriFocusMark(cornerRadius: CGFloat = Datamori.cornerRadius, liftScale: CGFloat = 1) -> some View {
+        modifier(DatamoriFocusMarkModifier(cornerRadius: cornerRadius, liftScale: liftScale))
     }
 }
 
@@ -25,6 +25,9 @@ private struct DatamoriFocusMarkModifier: ViewModifier {
     private var isFocused
 
     let cornerRadius: CGFloat
+    /// How much the system focus lift enlarges the view, so the outline
+    /// sits on the lifted edge.
+    let liftScale: CGFloat
 
     @ContentBuilder
     func body(content: Content) -> some View {
@@ -32,6 +35,7 @@ private struct DatamoriFocusMarkModifier: ViewModifier {
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .strokeBorder(Datamori.red, lineWidth: Datamori.focusStroke)
+                    .scaleEffect(isFocused ? liftScale : 1)
                     .opacity(isFocused ? 1 : 0)
                     .animation(.easeOut(duration: 0.15), value: isFocused)
                     .allowsHitTesting(false)

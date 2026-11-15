@@ -15,6 +15,8 @@ struct SwiftfinApp: App {
         Self.configure()
 
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.clear]
+
+        DatamoriTabBarAppearance.apply()
     }
 
     var body: some Scene {

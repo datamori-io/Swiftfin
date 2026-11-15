@@ -39,22 +39,12 @@ struct MainTabView: View {
         }
         #else
         TabCoordinator {
+            // Datamori: top tab bar. Search and Settings are icon-only at the end.
             TabItem.contentGroup(provider: DatamoriHomeProvider())
-
-            TabItem.library(
-                title: L10n.tvShowsCapitalized,
-                systemName: "tv",
-                filters: .init(itemTypes: [.series])
-            )
-
-            TabItem.library(
-                title: L10n.movies,
-                systemName: "film",
-                filters: .init(itemTypes: [.movie])
-            )
-
+            TabItem.datamoriLibrary(title: "Movies", libraryName: "Movies", systemImage: "film")
+            TabItem.datamoriLibrary(title: "Shows", libraryName: "Shows", systemImage: "tv")
+            TabItem.datamoriLibrary(title: "Anime", libraryName: "Anime", systemImage: "sparkles.tv")
             TabItem.search
-            TabItem.media
             TabItem.settings
         }
         #endif
@@ -104,11 +94,20 @@ struct MainTabView: View {
                     tabRoot(tab)
                     #endif
                 } label: {
+                    #if os(tvOS)
+                    if TabItem.datamoriIconOnlyTabIDs.contains(tab.item.id) {
+                        Label(tab.item.displayTitle, systemImage: tab.item.systemImage)
+                            .labelStyle(.iconOnly)
+                    } else {
+                        Text(tab.item.displayTitle.uppercased())
+                    }
+                    #else
                     Label(
                         tab.item.displayTitle,
                         systemImage: tab.item.systemImage
                     )
                     .symbolRenderingMode(.monochrome)
+                    #endif
                 }
             }
         }
@@ -117,15 +116,10 @@ struct MainTabView: View {
     @ContentBuilder
     private func tabContent() -> some View {
         #if os(tvOS)
-        switch tabBarPlacement {
-        case .sidebar:
-            tabView()
-                .tabViewStyle(.sidebarAdaptable)
-
-        case .tabBar:
-            tabView()
-                .tabViewStyle(.tabBarOnly)
-        }
+        // Datamori: always a top tab bar (the sidebar hid off-screen and
+        // made it easy to sign out by accident).
+        tabView()
+            .tabViewStyle(.tabBarOnly)
         #else
         tabView()
             .tabViewStyle(.sidebarAdaptable)
@@ -143,11 +137,9 @@ struct MainTabView: View {
                     await tabCoordinator.route(to: route)
                 }
             }
-            #if os(tvOS)
-            .background(alignment: .top) {
-                FocusedPosterCinematicBackgroundView()
-            }
-            #endif
+        #if os(tvOS)
+        // Datamori: no focused-poster colour tint; DatamoriBackground shows instead.
+        #endif
     }
 }
 
