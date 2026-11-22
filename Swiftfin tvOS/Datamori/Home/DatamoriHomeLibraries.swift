@@ -37,6 +37,43 @@ private func datamoriItemsRequest(
     return Paths.getItems(parameters: parameters)
 }
 
+// MARK: - Server row (playlist)
+
+/// One of the server's home-row playlists (kept by nzb-manager), in playlist order.
+/// Found by name among the playlists the user can see; an empty row if it's missing.
+struct DatamoriPlaylistLibrary: BaseItemKindLibrary {
+
+    let libraryItemTypes: [BaseItemKind] = [.movie, .series]
+    let name: String
+
+    var parent: TitledLibraryParent {
+        .init(displayTitle: name, id: "datamori-playlist-\(name)")
+    }
+
+    func retrievePage(environment: Empty, pageState: LibraryPageState) async throws -> [ItemPatch] {
+        guard pageState.pageOffset == 0 else { return [] }
+
+        var find = Paths.GetItemsParameters()
+        find.includeItemTypes = [.playlist]
+        find.isRecursive = true
+        find.searchTerm = name
+        find.userID = pageState.userSession.user.id
+        let found = try await pageState.userSession.client.send(Paths.getItems(parameters: find)).value.items ?? []
+        guard let playlistID = found.first(where: { $0.name == name })?.id else { return [] }
+
+        let parameters = Paths.GetPlaylistItemsParameters(
+            userID: pageState.userSession.user.id,
+            limit: 40,
+            fields: PosterSubtitleField.itemFields,
+            enableUserData: true
+        )
+        let response = try await pageState.userSession.client.send(
+            Paths.getPlaylistItems(playlistID: playlistID, parameters: parameters)
+        )
+        return try response.patches()
+    }
+}
+
 // MARK: - Leaving Soon
 
 /// Items in the Janitorr-filled "Leaving Soon" libraries, merged into one row.

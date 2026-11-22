@@ -40,6 +40,17 @@ struct DatamoriHomeProvider: ContentGroupProvider {
     func makeGroups(environment: Empty) async throws -> [any ContentGroup] {
         guard let userSession else { return [] }
 
+        // Once per version: put the server rows first and drop the app's own
+        // Recently Added (the server row replaces it). Order is otherwise the user's.
+        if Defaults[.datamoriHomeRowsVersion] < 1 {
+            var rows = Defaults[.datamoriHomeRows].filter { $0 != .recentlyAdded }
+            if !rows.contains(.serverRows) {
+                rows.insert(.serverRows, at: 0)
+            }
+            Defaults[.datamoriHomeRows] = rows
+            Defaults[.datamoriHomeRowsVersion] = 1
+        }
+
         let parameters = Paths.GetUserViewsParameters(userID: userSession.user.id)
         let userViews = try await userSession.send(Paths.getUserViews(parameters: parameters)).value.items ?? []
 
@@ -52,6 +63,7 @@ struct DatamoriHomeProvider: ContentGroupProvider {
 
         return _makeGroups(
             rows: Defaults[.datamoriHomeRows],
+            serverRows: Defaults[.datamoriServerRows],
             genres: Defaults[.datamoriGenreRows],
             trendingIDs: ids(named: DatamoriLibraryNames.trending),
             leavingSoonIDs: ids(named: DatamoriLibraryNames.leavingSoon)
@@ -61,6 +73,7 @@ struct DatamoriHomeProvider: ContentGroupProvider {
     @ContentGroupBuilder
     private func _makeGroups(
         rows: [DatamoriHomeRow],
+        serverRows: [String],
         genres: [String],
         trendingIDs: [String],
         leavingSoonIDs: [String]
@@ -69,6 +82,15 @@ struct DatamoriHomeProvider: ContentGroupProvider {
 
         for row in rows {
             switch row {
+            case .serverRows:
+                for name in serverRows {
+                    PosterGroup(
+                        id: "datamori-playlist-\(name)",
+                        library: DatamoriPlaylistLibrary(name: name),
+                        environment: .init(isHeaderButtonEnabled: false)
+                    )
+                }
+
             case .nextUp:
                 PosterGroup(
                     id: "datamori-next-up",

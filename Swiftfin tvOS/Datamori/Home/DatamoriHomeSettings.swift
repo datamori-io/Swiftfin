@@ -16,6 +16,10 @@ import Foundation
 /// Settings, and never reshuffled automatically.
 enum DatamoriHomeRow: String, CaseIterable, Displayable, Hashable, Defaults.Serializable {
 
+    /// The server's home rows: public playlists kept by nzb-manager (newest first),
+    /// the same rows the web home page shows. One row per name in
+    /// `datamoriServerRows`.
+    case serverRows
     case nextUp
     case recentlyAdded
     case trending
@@ -24,6 +28,7 @@ enum DatamoriHomeRow: String, CaseIterable, Displayable, Hashable, Defaults.Seri
 
     var displayTitle: String {
         switch self {
+        case .serverRows: "Server Rows"
         case .nextUp: "Next Up"
         case .recentlyAdded: "Recently Added"
         case .trending: "Top 10 Trending"
@@ -36,7 +41,9 @@ enum DatamoriHomeRow: String, CaseIterable, Displayable, Hashable, Defaults.Seri
 /// Jellyfin library names the Datamori rows are built from.
 enum DatamoriLibraryNames {
 
-    static let trending = ["Trending", "Trending Movies", "Trending Anime"]
+    // Renamed / merged 22 Nov 2026: "Trending" is "Trending Shows", and trending
+    // movies are folders of "Movies" (ranked by MDBList, so only trending ones show).
+    static let trending = ["Trending Shows", "Trending Anime", "Movies"]
     static let leavingSoon = ["Shows (Leaving Soon)", "Movies (Leaving Soon)"]
 }
 
@@ -45,7 +52,17 @@ extension Defaults.Keys {
     /// Enabled Home rows, in display order.
     static let datamoriHomeRows = Key<[DatamoriHomeRow]>(
         "datamori.home.rows",
-        default: DatamoriHomeRow.allCases
+        default: [.serverRows, .nextUp, .trending, .leavingSoon, .genres]
+    )
+
+    /// Bumped when the default rows change, so installed apps pick them up once.
+    static let datamoriHomeRowsVersion = Key<Int>("datamori.home.rowsVersion", default: 0)
+
+    /// Server playlists shown by the Server Rows row, in order (Josh, 22 Nov 2026:
+    /// current trending, recently added, new 1990's, new 1980's).
+    static let datamoriServerRows = Key<[String]>(
+        "datamori.home.serverRows",
+        default: ["Current Trending", "Recently Added Movies", "New 1990's Movies", "New 1980's Movies"]
     )
 
     /// MDBList list JSON URLs used to rank Top 10 Trending.
