@@ -37,6 +37,13 @@ struct PosterHStack<
         #endif
     }
 
+    #if os(tvOS)
+    /// 1-based position of an element, for Datamori rank badges.
+    private func datamoriPosition(of item: Data.Element) -> Int? {
+        elements.firstIndex { $0.id == item.id }.map { $0 - elements.startIndex + 1 }
+    }
+    #endif
+
     @ContentBuilder
     var body: some View {
         CollectionHStack(
@@ -50,6 +57,9 @@ struct PosterHStack<
             ) { namespace in
                 action(item, namespace)
             }
+            #if os(tvOS)
+            .environment(\.datamoriPosterIndex, datamoriPosition(of: item))
+            #endif
         }
         .clipsToBounds(false)
         .insets(horizontal: viewLayout.edgePadding)

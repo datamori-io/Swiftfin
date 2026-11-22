@@ -52,10 +52,16 @@ where Library.Element: LibraryElement, Library.Element: Poster {
 
     @ContentBuilder
     private var headerTitle: some View {
+        #if os(tvOS)
+        Text(group.displayTitle)
+            .datamoriLabel(.title3)
+            .lineLimit(1)
+        #else
         Text(group.displayTitle)
             .font(.title3)
             .fontWeight(.semibold)
             .lineLimit(1)
+        #endif
     }
 
     @ContentBuilder

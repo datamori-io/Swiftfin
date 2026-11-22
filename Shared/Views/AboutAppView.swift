@@ -19,7 +19,7 @@ struct AboutAppView: View {
 
     @ContentBuilder
     var body: some View {
-        Form(image: .jellyfinBlobBlue) {
+        Form(image: .appMark) {
             if !viewLayout.isLarge {
                 Section {
                     VStack(alignment: .center, spacing: 10) {

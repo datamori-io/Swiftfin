@@ -54,7 +54,8 @@ private struct StoredThemePreferencesModifier: ViewModifier {
 
     private var theme: AppTheme.Value {
         #if os(tvOS)
-        AppTheme.Value(appearance: .dark, accentColor: userID == nil ? .jellyfinPurple : userAccentColor)
+        // Datamori: one fixed brand accent (red) on tvOS.
+        AppTheme.Value(appearance: .dark, accentColor: Datamori.red)
         #else
         if userID != nil {
             AppTheme.Value(appearance: userAppearance, accentColor: userAccentColor)

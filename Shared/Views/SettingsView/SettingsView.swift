@@ -42,10 +42,13 @@ struct SettingsView: View {
 
     @ContentBuilder
     var body: some View {
-        Form(image: .jellyfinBlobBlue) {
+        Form(image: .appMark) {
             serverSection
             customizeSection
             diagnosticsSection
+            #if os(tvOS)
+            DatamoriSignOutSection()
+            #endif
         }
         #if os(iOS)
         .navigationTitle(L10n.settings)
@@ -91,6 +94,8 @@ struct SettingsView: View {
             }
         }
 
+        #if !os(tvOS)
+        // Datamori: on tvOS, Sign Out lives at the bottom of Settings behind a confirm.
         Section {
             Button {
                 Task { @MainActor in
@@ -120,6 +125,7 @@ struct SettingsView: View {
             .controlSize(.large)
             #endif
         }
+        #endif
     }
 
     // MARK: - Customization Section
@@ -131,7 +137,14 @@ struct SettingsView: View {
             Picker(L10n.appearance, selection: $appearance)
             #endif
 
+            #if os(tvOS)
+            // Datamori: accent is fixed to the brand red; Home rows are configurable.
+            ChevronButton("Home Rows") {
+                router.route(to: .datamoriHomeSettings)
+            }
+            #else
             ColorPicker(L10n.accentColor, selection: $accentColor, supportsOpacity: false)
+            #endif
 
             ChevronButton(L10n.advanced) {
                 router.route(to: .customizeSettingsView)

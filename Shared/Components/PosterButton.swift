@@ -61,8 +61,16 @@ struct PosterButton<Item: Poster>: View {
         .overlay { overlay.posterStyle(displayType) }
         .contentShape(.contextMenuPreview, Rectangle())
         .matchedTransitionSource(id: "item", in: namespace)
+        #if os(tvOS)
+        .datamoriPosterBadge()
+        #endif
         .subtleShadow()
         .hoverEffect(.highlight)
+        #if os(tvOS)
+        // After the hover effect (inside it, the lift highlight hides it);
+        // scaled to match the lifted poster.
+        .datamoriFocusMark(liftScale: Datamori.focusLiftScale)
+        #endif
     }
 
     @ContentBuilder
@@ -98,7 +106,11 @@ struct PosterButton<Item: Poster>: View {
         .environment(\.posterDisplayType, displayType)
         .foregroundStyle(.primary, .secondary)
         .buttonStyle(.borderless)
+        #if os(tvOS)
+        .buttonBorderShape(.roundedRectangle(radius: Datamori.cornerRadius))
+        #else
         .buttonBorderShape(.roundedRectangle)
+        #endif
         #if os(tvOS)
         .focusedValue(\.focusedPoster, AnyPoster(item))
         .trackingSize($posterSize)
